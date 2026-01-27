@@ -25,10 +25,9 @@ async function query(queryObject) {
 export default { query };
 
 function getSSLValues() {
-  const certificate = process.env.POSTGRES_CA;
-  if (certificate) {
+  if (process.env.POSTGRES_CA) {
     return {
-      ca: certificate,
+      ca: process.env.POSTGRES_CA,
     };
   }
 
