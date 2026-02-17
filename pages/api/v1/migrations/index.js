@@ -3,37 +3,49 @@ import migrationRunner from "node-pg-migrate";
 import { join } from "node:path";
 
 export default async function migrations(request, response) {
-  const client = await database.getClient();
+  const allowedMethods = ["GET", "POST"];
 
-  const defaultOptions = {
-    dbClient: client,
-    dryRun: true,
-    dir: join("infra", "migrations"),
-    direction: "up",
-    verbose: true,
-    migrationsTable: "pgmigrations",
-  };
-
-  if (request.method == "GET") {
-    const pendingMigrations = await migrationRunner(defaultOptions);
-    await client.end();
-    return response.status(200).json(pendingMigrations);
+  if (!allowedMethods.includes(request.method)) {
+    return response.status(405).end();
   }
 
-  if (request.method == "POST") {
-    const migratedMigrations = await migrationRunner({
-      ...defaultOptions,
-      dryRun: false,
-    });
+  let client;
 
-    await client.end();
+  try {
+    client = await database.getClient();
 
-    if (migratedMigrations.length > 0) {
-      return response.status(201).json(migratedMigrations);
+    const defaultOptions = {
+      dbClient: client,
+      dryRun: true,
+      dir: join("infra", "migrations"),
+      direction: "up",
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    };
+
+    if (request.method == "GET") {
+      const pendingMigrations = await migrationRunner(defaultOptions);
+      await client.end();
+      return response.status(200).json(pendingMigrations);
     }
 
-    return response.status(200).json(migratedMigrations);
-  }
+    if (request.method == "POST") {
+      const migratedMigrations = await migrationRunner({
+        ...defaultOptions,
+        dryRun: false,
+      });
 
-  return response.status(405).end();
+      await client.end();
+
+      if (migratedMigrations.length > 0) {
+        return response.status(201).json(migratedMigrations);
+      }
+
+      return response.status(200).json(migratedMigrations);
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await client.end();
+  }
 }
