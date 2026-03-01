@@ -7,7 +7,7 @@
     "dev": "npm run compose:up && npm run wait-for-postgres && npm run migration:up && next dev",
     "lint:check": "prettier --check .",
     "lint:fix": "prettier --write .",
-    "test": "npm run compose:up && npm run wait-for-postgres && concurrently -n next,jest -k --hide next -k -s command-jest 'next dev' 'jest --runInBand'",
+    "test": "npm run compose:up && concurrently -n next,jest -k --hide next -k -s command-jest \"next dev\" \"jest --runInBand\"",
     "test:watch": "jest --runInBand --watchAll",
     "compose:up": "docker-compose -f infra/compose.yaml up -d",
     "compose:stop": "docker-compose -f infra/compose.yaml stop",
