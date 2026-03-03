@@ -9,9 +9,9 @@
     "lint:fix": "prettier --write .",
     "test": "npm run compose:up && concurrently -n next,jest -k --hide next -k -s command-jest \"next dev\" \"jest --runInBand\"",
     "test:watch": "jest --runInBand --watchAll",
-    "compose:up": "docker-compose -f infra/compose.yaml up -d",
-    "compose:stop": "docker-compose -f infra/compose.yaml stop",
-    "compose:down": "docker-compose -f infra/compose.yaml down",
+    "compose:up": "docker compose -f infra/compose.yaml up -d",
+    "compose:stop": "docker compose -f infra/compose.yaml stop",
+    "compose:down": "docker compose -f infra/compose.yaml down",
     "migration:create": "node-pg-migrate -m infra/migrations create",
     "migration:up": "node-pg-migrate --envPath .env.development -m infra/migrations up",
     "wait-for-postgres": "node ./infra/scripts/wait-for-postgres.js"
